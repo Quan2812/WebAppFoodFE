@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { Fragment } from "react";
+import React from "react";
 import { connect } from "react-redux";
 import { getProducts } from "../../helpers/product";
 import ProductGridSingle from "../../components/product/ProductGridSingle";
@@ -19,37 +19,21 @@ const ProductGrid = ({
   sliderClassName,
   spaceBottomClass
 }) => {
-  return (
-    <Fragment>
-      {products.map(product => {
-        return (
-          <ProductGridSingle
-            sliderClassName={sliderClassName}
-            spaceBottomClass={spaceBottomClass}
-            product={product}
-            currency={currency}
-            addToCart={addToCart}
-            addToWishlist={addToWishlist}
-            addToCompare={addToCompare}
-            cartItem={
-              cartItems.filter(cartItem => cartItem.id === product.id)[0]
-            }
-            wishlistItem={
-              wishlistItems.filter(
-                wishlistItem => wishlistItem.id === product.id
-              )[0]
-            }
-            compareItem={
-              compareItems.filter(
-                compareItem => compareItem.id === product.id
-              )[0]
-            }
-            key={product.id}
-          />
-        );
-      })}
-    </Fragment>
-  );
+  return products.map((product) => (
+    <div className={sliderClassName} key={product.id}>
+      <ProductGridSingle
+        product={product}
+        currency={currency}
+        addToCart={addToCart}
+        addToWishlist={addToWishlist}
+        addToCompare={addToCompare}
+        cartItem={cartItems.find((item) => item.id === product.id)}
+        wishlistItem={wishlistItems.find((item) => item.id === product.id)}
+        compareItem={compareItems.find((item) => item.id === product.id)}
+        spaceBottomClass={spaceBottomClass}
+      />
+    </div>
+  ));
 };
 
 ProductGrid.propTypes = {
@@ -80,7 +64,7 @@ const mapStateToProps = (state, ownProps) => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     addToCart: (
       item,

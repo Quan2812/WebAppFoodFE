@@ -58,18 +58,20 @@ const ProductAdd = () => {
     };
     const onHandleSubmit = () => {
         form.validateFields().then(async (item) => {
+            setLoading(true);
             const formDataApi = new FormData();
             const formData = {
                 NameProduct: item.NameProduct,
                 Price: item.Price,
                 Quantity: item.Quantity,
-                Discount: item.Discount,
+                Discount: item.Discount | 0,
                 ProductTypeId: item.Category,
                 Status: item.Status,
                 AvartarImageProduct: fileList[0],
                 shortDescription: item.shortDescription,
                 fullDescription: item.fullDescription,
             };
+            console.log("discount", item.Discount);
             formDataApi.append("NameProduct", formData.NameProduct);
             formDataApi.append("Price", formData.Price);
             formDataApi.append("Quantity", formData.Quantity);
@@ -88,6 +90,7 @@ const ProductAdd = () => {
                 autoDismiss: true,
                 autoDismissTimeout: 1000,
             });
+            setLoading(false);
             history.push(`/admin/products`);
         });
     };
@@ -153,12 +156,26 @@ const ProductAdd = () => {
                         name="Price"
                         labelCol={{ span: 3, offset: 1 }}
                         tooltip="Giá gốc sản phẩm"
-                        rules={[{ required: true }]}
+                        rules={[
+                            {
+                              required: true,
+                              message: "Vui lòng nhập giá sản phẩm!"
+                            },
+                            {
+                              validator(_, value) {
+                                if (value < 0) {
+                                  return Promise.reject("Giá không được nhỏ hơn 0!");
+                                }
+                                return Promise.resolve();
+                              }
+                            }
+                          ]}
                     >
                         <Input
                             style={{ height: 30 }}
                             placeholder="Nhập giá sản phẩm..."
                             type="number"
+                            min={0}
                         />
                     </Form.Item>
                     <Form.Item
@@ -166,12 +183,26 @@ const ProductAdd = () => {
                         name="Quantity"
                         labelCol={{ span: 3, offset: 1 }}
                         tooltip="Tổng số lượng sản phẩm"
-                        rules={[{ required: true }]}
+                        rules={[
+                            {
+                              required: true,
+                              message: "Vui lòng nhập số lượng!"
+                            },
+                            {
+                              validator(_, value) {
+                                if (value < 0) {
+                                  return Promise.reject("Số lượng không được nhỏ hơn 0!");
+                                }
+                                return Promise.resolve();
+                              }
+                            }
+                          ]}
                     >
                         <Input
                             style={{ height: 30 }}
                             placeholder="Nhập số lượng sản phẩm..."
                             type="number"
+                            min={0}
                         />
                     </Form.Item>
                     <Form.Item
@@ -179,12 +210,14 @@ const ProductAdd = () => {
                         name="Discount"
                         labelCol={{ span: 3, offset: 1 }}
                         tooltip="% Giảm giá sản phẩm"
-                        rules={[{ required: true }]}
+                        rules={[{ required: false}]}
                     >
                         <Input
                             style={{ height: 30 }}
                             placeholder="Nhập giảm giá..."
                             defaultValue={0}
+                            type="number"
+                            min={0}
                         />
                     </Form.Item>
                     <Row gutter={16}>
