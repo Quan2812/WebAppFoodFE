@@ -71,11 +71,17 @@ const TabProductCategory = ({
     },
   ]);
 
-  useEffect(async () => {
-    try {
-      const res = await categoryAPI.GetCategoryFrontend();
-      // setDatas(res);
-    } catch (error) {}
+  useEffect(() => {
+    const fetchCategory = async () => {
+      try {
+        const response = await categoryAPI.GetCategoryFrontend();
+        console.log("Res Category", response); // ← đây mới là mảng category
+        setDatas(response);
+      } catch (error) {
+        console.error("Error fetching category", error);
+      }
+    };
+    fetchCategory();
   }, []);
   return (
     <div className={`product-area ${spaceBottomClass ? spaceBottomClass : ""}`}>
