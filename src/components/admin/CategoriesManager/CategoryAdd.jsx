@@ -42,6 +42,7 @@ const CategoryAdd = () => {
         setPreview(filePreview);
     };
     const onHandleSubmit = async (e) => {
+        setLoading(true);
         const formDataApi = new FormData();
         const item = await form.validateFields();
         const formData = {

@@ -54,6 +54,7 @@ const OrderList = () => {
       imageComplete: dataOrderCurrent.imageComplete,
       orderStatus: dataOrderCurrent.orderStatus.name,
       actualPrice: dataOrderCurrent.actualPrice,
+      originalPrice: dataOrderCurrent.originalPrice,
       paymentId: dataOrderCurrent.paymentId,
       fullName: dataOrderCurrent.fullName,
       email: dataOrderCurrent.address,

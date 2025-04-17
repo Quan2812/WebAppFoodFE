@@ -64,6 +64,7 @@ const Cart = ({ location, cartItems }) => {
       imageComplete: data.imageComplete,
       orderStatus: data.orderStatus.name,
       actualPrice: data.actualPrice,
+      originalPrice: data.originalPrice,
       paymentId: data.paymentId,
       fullName: data.fullName,
       email: data.address,

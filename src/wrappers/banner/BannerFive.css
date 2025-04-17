@@ -1,0 +1,27 @@
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  
+  .product-item {
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 8px;
+  }
+  
+  /* Tablet: 2 cột */
+  @media (max-width: 1023px) {
+    .product-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  /* Mobile: 1 cột */
+  @media (max-width: 599px) {
+    .product-grid {
+      grid-template-columns: repeat(1, 1fr);
+    }
+  }
+  

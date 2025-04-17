@@ -134,7 +134,7 @@ const ProductAdd = () => {
                     name="basic"
                     labelCol={{ span: 8 }}
                     wrapperCol={{ span: 16 }}
-                    initialValues={{ remember: true }}
+                    initialValues={{ remember: true, Status: "1" }}
                     autoComplete="off"
                     form={form}
                     validateMessages={validateMessages}
@@ -250,6 +250,7 @@ const ProductAdd = () => {
                                 style={{ width: "calc(100% - 131px)" }}
                                 labelCol={{ span: 0, offset: 0 }}
                                 rules={[{ required: true }]}
+                                defaultValue={1}
                             >
                                 <Select placeholder="Chọn trạng thái">
                                     <Select.Option key="1" value="1">

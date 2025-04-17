@@ -40,16 +40,16 @@ const HomeOrganicFood = () => {
           category="all"
           productTabClass="product-tab-fruits"
         />
-        <CountDownTwo
+        {/* <CountDownTwo
           spaceBottomClass="pb-95"
-        />
-        <TabProductFour
+        /> */}
+        {/* <TabProductFour
           spaceBottomClass="pb-30"
           category="all"
           status={1}
           titleText="Giảm giá hôm nay"
           productTabClass="product-tab-fruits"
-        />
+        /> */}
         {/* testimonial */}
         <TestimonialOne
           spaceTopClass="pt-100"

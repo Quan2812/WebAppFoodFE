@@ -17,6 +17,7 @@ import VoucherApi from "../../api/voucher/VoucherApi";
 import CartApi from "../../api/cart/CartApi";
 import AddressApi from "../../api/ghn/AddressApi";
 import GiaoHangNhanhApi from "../../api/ghn/GiaoHangNhanhApi";
+import LoadingSpin from "../../components/loading/LoadingSpin";
 import { number } from "prop-types";
 
 const Checkout = ({ location, cartItems, currency, confirmOrders }) => {
@@ -127,7 +128,7 @@ const Checkout = ({ location, cartItems, currency, confirmOrders }) => {
       try {
         const { data } = await AddressApi.getProvinceData();
         setProvinces(data);
-      } catch (error) {}
+      } catch (error) { }
     };
     getProvinceData();
   }, []);
@@ -147,7 +148,7 @@ const Checkout = ({ location, cartItems, currency, confirmOrders }) => {
       });
       setTransportFee(Number(res.data.data.total));
       setIntendTime(res2.data.data.leadtime);
-    } catch (error) {}
+    } catch (error) { }
   }, [selectedWard]);
   // getDistrictByProvince
   useEffect(() => {
@@ -158,7 +159,7 @@ const Checkout = ({ location, cartItems, currency, confirmOrders }) => {
             selectedProvince
           );
           setDistricts(data);
-        } catch (error) {}
+        } catch (error) { }
       };
       getDistrictByProvince();
     }
@@ -174,7 +175,7 @@ const Checkout = ({ location, cartItems, currency, confirmOrders }) => {
 
           setWards(data);
           console.log("list wards", data);
-        } catch (error) {}
+        } catch (error) { }
       };
       getWardsByDistrict();
     }
@@ -223,6 +224,7 @@ const Checkout = ({ location, cartItems, currency, confirmOrders }) => {
   };
   const confirmOrderShipCode = async () => {
     const data = userOrder;
+
     if (!validateUserOrder(data)) {
       messageApi.open({
         type: "warning",
@@ -230,10 +232,28 @@ const Checkout = ({ location, cartItems, currency, confirmOrders }) => {
       });
       return false;
     }
-    // validate trang thanh toán
+
     try {
-      data.paymentId = 1;
       setLoading(true);
+
+      if (codeVoucher) {
+        try {
+          await VoucherApi.ApllyVoucher(userOrder.userId, codeVoucher);
+          console.log("Áp dụng voucher thành công!");
+        } catch (voucherError) {
+          console.log("Lỗi khi áp dụng voucher: ", voucherError);
+          messageApi.open({
+            type: "error",
+            content: "Mã giảm giá không hợp lệ hoặc đã có lỗi xảy ra!",
+          });
+          setLoading(false);
+          return;
+        }
+      }
+
+      data.paymentId = 1;
+
+      // Lưu thông tin vào localStorage trước khi tạo đơn
       localStorage.setItem(
         "dataBill",
         JSON.stringify({
@@ -242,7 +262,7 @@ const Checkout = ({ location, cartItems, currency, confirmOrders }) => {
           paymentOrder: "Thanh Toán Khi Nhận Hàng",
           noteOrder: data.noteOrder,
           imageComplete: data.imageComplete,
-          orderStatus: "đang sử lý",
+          orderStatus: "Đang xử lý",
           actualPrice: data.actualPrice,
           paymentId: data.paymentId,
           fullName: data.fullName,
@@ -255,47 +275,46 @@ const Checkout = ({ location, cartItems, currency, confirmOrders }) => {
               nameProduct: item.name,
               avartarImageProduct: item.image,
               quantity: item.quantity,
-              priceOld: item.price.toLocaleString("vi-VN") + " " + "vnd",
-              price:
-                (
-                  item.price -
-                  (item.price / 100) * item.discount
-                ).toLocaleString("vi-VN") +
-                " " +
-                "VND",
-              totalPrice:
-                (
-                  (item.price - (item.price / 100) * item.discount) *
-                  item.quantity
-                ).toLocaleString("vi-VN") +
-                " " +
-                "VND",
+              priceOld: item.price.toLocaleString("vi-VN") + " vnd",
+              price: (
+                item.price -
+                (item.price / 100) * item.discount
+              ).toLocaleString("vi-VN") + " VND",
+              totalPrice: (
+                (item.price - (item.price / 100) * item.discount) *
+                item.quantity
+              ).toLocaleString("vi-VN") + " VND",
             };
           }),
         })
       );
+
+      // Gửi đơn hàng
+      console.log("request order:", data);
       const response = await OrderApi.CreateOrder(data);
-      if (codeVoucher) {
-        await VoucherApi.ApllyVoucher(userOrder.userId, codeVoucher);
-      }
+
       messageApi.open({
         type: "success",
         content: "Cảm ơn bạn đã mua sản phẩm của chúng tôi",
       });
-      setLoading(false);
+
       setTimeout(function () {
         confirmOrders();
         CartApi.RemoveAllCart(userOrder.userId);
         history.push("/Complete");
       }, 1500);
+
     } catch (error) {
+      console.log("exception: ", error);
       messageApi.open({
         type: "error",
         content: "Thanh toán thất bại",
       });
+    } finally {
       setLoading(false);
     }
   };
+
   const confirmOrderPayOnline = async () => {
     const data = userOrder;
     data.paymentId = 3;
@@ -558,13 +577,18 @@ const Checkout = ({ location, cartItems, currency, confirmOrders }) => {
                         </div>
                         {contextHolder}
                         {loading && (
+                          <div>
+                            <LoadingSpin />
+                          </div>
+                        )}
+                        {/* {loading && (
                           <div style={{ width: "100%", textAlign: "center" }}>
                             <Spin
                               style={{ textAlign: "center" }}
                               size="large"
                             />
                           </div>
-                        )}
+                        )} */}
                         <div className="your-order-middle">
                           <ul>
                             {cartItems.map((cartItem, key) => {
@@ -581,9 +605,9 @@ const Checkout = ({ location, cartItems, currency, confirmOrders }) => {
 
                               discountedPrice != null
                                 ? (cartTotalPrice +=
-                                    finalDiscountedPrice * cartItem.quantity)
+                                  finalDiscountedPrice * cartItem.quantity)
                                 : (cartTotalPrice +=
-                                    finalProductPrice * cartItem.quantity);
+                                  finalProductPrice * cartItem.quantity);
                               return (
                                 <li key={key}>
                                   <span className="order-middle-left">
@@ -592,23 +616,23 @@ const Checkout = ({ location, cartItems, currency, confirmOrders }) => {
                                   <span className="order-price">
                                     {discountedPrice !== null
                                       ? parseInt(
+                                        (
+                                          currency.currencySymbol +
                                           (
-                                            currency.currencySymbol +
-                                            (
-                                              finalDiscountedPrice *
-                                              cartItem.quantity
-                                            ).toFixed(2)
-                                          ).replace("$", "")
-                                        ).toLocaleString("en-US") + " VND"
+                                            finalDiscountedPrice *
+                                            cartItem.quantity
+                                          ).toFixed(2)
+                                        ).replace("$", "")
+                                      ).toLocaleString("en-US") + " VND"
                                       : parseInt(
+                                        (
+                                          currency.currencySymbol +
                                           (
-                                            currency.currencySymbol +
-                                            (
-                                              finalProductPrice *
-                                              cartItem.quantity
-                                            ).toFixed(2)
-                                          ).replace("$", "")
-                                        ).toLocaleString("en-US") + " VND"}
+                                            finalProductPrice *
+                                            cartItem.quantity
+                                          ).toFixed(2)
+                                        ).replace("$", "")
+                                      ).toLocaleString("en-US") + " VND"}
                                   </span>
                                 </li>
                               );
@@ -648,7 +672,7 @@ const Checkout = ({ location, cartItems, currency, confirmOrders }) => {
                                   (cartTotalPriceDiscount =
                                     cartTotalPrice -
                                     (cartTotalPrice / 100) *
-                                      discount.valuevoucher)
+                                    discount.valuevoucher)
                                 }
                                 {
                                   (cartTotalPriceDiscount =
@@ -689,18 +713,18 @@ const Checkout = ({ location, cartItems, currency, confirmOrders }) => {
                         <b>Thời gian giao hàng dự kiến</b>:{" "}
                         {intendTime !== -1
                           ? Math.floor(
+                            Math.abs(
+                              intendTime - Math.floor(Date.now() / 1000)
+                            ) /
+                            (60 * 60 * 24)
+                          ) === 1
+                            ? "Đơn hàng sẽ được giao trong ngày"
+                            : Math.floor(
                               Math.abs(
                                 intendTime - Math.floor(Date.now() / 1000)
                               ) /
-                                (60 * 60 * 24)
-                            ) === 1
-                            ? "Đơn hàng sẽ được giao trong ngày"
-                            : Math.floor(
-                                Math.abs(
-                                  intendTime - Math.floor(Date.now() / 1000)
-                                ) /
-                                  (60 * 60 * 24)
-                              ) + " ngày"
+                              (60 * 60 * 24)
+                            ) + " ngày"
                           : "Vui lòng nhập vào địa chỉ."}
                       </div>
                       <div className="payment-method">

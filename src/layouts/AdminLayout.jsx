@@ -99,11 +99,11 @@ const AdminLayout = () => {
   const profile = (
     <Menu
       items={[
-        {
-          key: "1",
-          icon: <SettingOutlined />,
-          label: <span>Tài khoản</span>,
-        },
+        // {
+        //   key: "1",
+        //   icon: <SettingOutlined />,
+        //   label: <span>Tài khoản</span>,
+        // },
         {
           key: "2",
           icon: <LogoutOutlined />,

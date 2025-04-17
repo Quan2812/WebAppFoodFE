@@ -12,6 +12,7 @@ class Bill extends React.Component {
             lineHeight: "30px",
             borderCollapse: "collapse",
         };
+        var shipPrice = curentInfo.actualPrice - curentInfo.originalPrice;
         return (
             <div style={body} className="modal-body p-0">
                 <table style={tableStyles} border={1}>
@@ -30,7 +31,7 @@ class Bill extends React.Component {
                                 POLYFOOD - Đồ ăn thuần chay - Hà Nội
                             </p>
                             <p>
-                                Phố Trịnh Văn Bô, Xuân Phương, Nam Từ Liêm, Hà Nội
+                                Tầng 4 – Tòa nhà VTC Online, 18 Tam Trinh, P. Minh Khai, Q. Hai Bà Trưng, Hà
                             </p>
                         </td>
                     </tr>
@@ -69,6 +70,17 @@ class Bill extends React.Component {
                             </tr>
                         );
                     })}
+                    <tr>
+                        <td colSpan={2} className="text-center">
+                            <strong>Phí ship</strong>
+                        </td>
+                        <td colSpan={2} className="text-center">
+                            <strong>
+                                {shipPrice.toLocaleString("vi-VN")}{" "}
+                                VNĐ
+                            </strong>
+                        </td>
+                    </tr>
                     <tr>
                         <td colSpan={2} className="text-center">
                             <strong>Tổng đơn</strong>

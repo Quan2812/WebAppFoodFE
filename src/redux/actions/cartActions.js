@@ -100,7 +100,8 @@ export const fetchDataCarts = (cart) => {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
       if (user) {
-        const res = await CartApi.GetCart(user.user.userId);
+        const response = await CartApi.GetCart(user.user.userId);
+        const res = response.data;
         if (res.length > 0) {
           dispatch(fetchDCarts(res));
           return;
