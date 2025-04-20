@@ -45,7 +45,7 @@ export const addToCart = (
 export const decreaseQuantity = (item, addToast) => {
   return (dispatch) => {
     if (addToast) {
-      addToast("Đã xóa khỏi giỏ hàng", {
+      addToast("Cập nhật số lượng thành công", {
         appearance: "warning",
         autoDismiss: true,
       });
