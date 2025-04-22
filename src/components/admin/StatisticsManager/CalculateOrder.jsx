@@ -9,10 +9,10 @@ const { RangePicker } = DatePicker;
 const CalculateOrder = () => {
   const [selectedDate, setSelectedDate] = useState({
     startDate: dayjs().subtract(6, "month"),
-    endDate: dayjs(),
+    endDate: dayjs().add(6, 'hour'),
   });
   const [startDate, setStartDate] = useState(dayjs().subtract(6, "month"));
-  const [endDate, setEndDate] = useState(dayjs());
+  const [endDate, setEndDate] = useState(dayjs().add(6, 'hour'));
   const [data, setData] = useState([
     {
       type: "dxl",
@@ -60,15 +60,15 @@ const CalculateOrder = () => {
     angleField: "orderCount",
     colorField: "orderStatus",
     color: ({ orderStatus }) => {
-      if (orderStatus === "Đang xử lý") {
+      if (orderStatus === "Chờ xác nhận") {
         return "#70a1ff";
-      } else if (orderStatus === "Hủy bỏ") {
+      } else if (orderStatus === "Đã hủy") {
         return "#ff4757";
       } else if (orderStatus === "Đang giao") {
         return "#ffa502";
-      }else if (orderStatus === "Khách hàng hủy") {
+      }else if (orderStatus === "Khách hủy") {
         return "#FF4500";
-      }else if (orderStatus === "Xác nhận đơn") {
+      }else if (orderStatus === "Đã xác nhận") {
         return "#9ACD32";
       }
       return "#2ed573";

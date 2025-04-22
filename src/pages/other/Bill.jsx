@@ -12,7 +12,7 @@ class Bill extends React.Component {
             lineHeight: "30px",
             borderCollapse: "collapse",
         };
-        var shipPrice = curentInfo.actualPrice - curentInfo.originalPrice;
+        var shipPrice = (curentInfo.actualPrice - curentInfo.originalPrice) ?? 22000;
         return (
             <div style={body} className="modal-body p-0">
                 <table style={tableStyles} border={1}>

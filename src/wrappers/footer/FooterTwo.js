@@ -102,7 +102,7 @@ const FooterTwo = ({
             className={`copyright-2 ${
               copyrightColorClass ? copyrightColorClass : ""
             }`}>
-            <p>Poly Food - © FPT Polytechnic Hà Nội</p>
+            <p>Poly Food - © VTC ACADEMY</p>
           </div>
         </div>
       </div>

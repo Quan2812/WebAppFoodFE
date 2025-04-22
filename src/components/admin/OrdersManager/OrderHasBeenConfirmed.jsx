@@ -184,6 +184,7 @@ const OrderHasBeenConfirmed = () => {
   };
   const onFinish = async (values) => {
     console.log("Form values:", values);
+    setIsModalShipOpen(false);
     const dataShip = {
       ...dataCurrentShip,
       note: values.note,

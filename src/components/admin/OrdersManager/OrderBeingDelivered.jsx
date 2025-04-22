@@ -56,6 +56,7 @@ const OrderBeingDilivered = () => {
     if (!fileList[0]) {
       return;
     }
+    setIsModal(false);
     const formDataApi = new FormData();
     formDataApi.append("orderId", idCurent.current);
     formDataApi.append("formFile", fileList[0].originFileObj);
@@ -63,6 +64,10 @@ const OrderBeingDilivered = () => {
       setLoading(true);
       await OrderApi.CompleteOrder(formDataApi);
       setIsModal(false);
+      messageApi.open({
+        type: "success",
+        content: "Chúc mừng Đơn hàng đã hoàn thành!",
+      });
       history.go(0);
       setLoading(false);
     } catch (error) {

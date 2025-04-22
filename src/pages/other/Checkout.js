@@ -132,24 +132,67 @@ const Checkout = ({ location, cartItems, currency, confirmOrders }) => {
     };
     getProvinceData();
   }, []);
-  useEffect(async () => {
-    try {
-      const res = await GiaoHangNhanhApi.CalculateShippingFeeApi({
-        service_id: 53320,
-        coupon: null,
-        to_district_id: parseInt(selectedDistrict),
-        to_ward_code: `${selectedWard}`,
-        weight: 1000,
-      });
-      const res2 = await GiaoHangNhanhApi.IntendTime({
-        service_id: 53320,
-        to_district_id: parseInt(selectedDistrict),
-        to_ward_code: `${selectedWard}`,
-      });
-      setTransportFee(Number(res.data.data.total));
-      setIntendTime(res2.data.data.leadtime);
-    } catch (error) { }
+
+
+  // Tính phí ship mới
+  useEffect(() => {
+    const fetchTransportFee = async () => {
+      const timeout = new Promise((_, reject) =>
+        setTimeout(() => reject('Timeout exceeded'), 10000) // Timeout 10s
+      );
+  
+      try {
+        // Sử dụng Promise.race để đồng thời gọi API và timeout
+        const res = await Promise.race([
+          GiaoHangNhanhApi.CalculateShippingFeeApi({
+            service_id: 53320,
+            coupon: null,
+            to_district_id: parseInt(selectedDistrict),
+            to_ward_code: `${selectedWard}`,
+            weight: 1000,
+          }),
+          timeout, // Timeout nếu không nhận được kết quả trong 10s
+        ]);
+  
+        const res2 = await GiaoHangNhanhApi.IntendTime({
+          service_id: 53320,
+          to_district_id: parseInt(selectedDistrict),
+          to_ward_code: `${selectedWard}`,
+        });
+  
+        setTransportFee(Number(res.data.data.total));
+        setIntendTime(res2.data.data.leadtime);
+      } catch (error) {
+        // Nếu bị timeout hoặc lỗi API, đặt giá trị mặc định
+        console.error(error);
+        setTransportFee(22000); // Set giá trị mặc định khi API thất bại hoặc timeout
+      }
+    };
+  
+    if (selectedWard) {
+      fetchTransportFee();
+    }
   }, [selectedWard]);
+
+  // useEffect(async () => {
+  //   try {
+  //     const res = await GiaoHangNhanhApi.CalculateShippingFeeApi({
+  //       service_id: 53320,
+  //       coupon: null,
+  //       to_district_id: parseInt(selectedDistrict),
+  //       to_ward_code: `${selectedWard}`,
+  //       weight: 1000,
+  //     });
+  //     const res2 = await GiaoHangNhanhApi.IntendTime({
+  //       service_id: 53320,
+  //       to_district_id: parseInt(selectedDistrict),
+  //       to_ward_code: `${selectedWard}`,
+  //     });
+  //     setTransportFee(Number(res.data.data.total));
+  //     setIntendTime(res2.data.data.leadtime);
+  //   } catch (error) { }
+  // }, [selectedWard]);
+  
   // getDistrictByProvince
   useEffect(() => {
     if (selectedProvince) {
@@ -317,7 +360,7 @@ const Checkout = ({ location, cartItems, currency, confirmOrders }) => {
 
   const confirmOrderPayOnline = async () => {
     const data = userOrder;
-    data.paymentId = 3;
+    data.paymentId = 2;
     validateUserOrder(data);
     console.log(validateUserOrder(data));
     if (!validateUserOrder(data)) {
@@ -337,7 +380,7 @@ const Checkout = ({ location, cartItems, currency, confirmOrders }) => {
           paymentOrder: "Thanh Toán online",
           noteOrder: data.noteOrder,
           imageComplete: data.imageComplete,
-          orderStatus: "đang sử lý",
+          orderStatus: "đang xử lý",
           actualPrice: data.actualPrice,
           paymentId: data.paymentId,
           fullName: data.fullName,

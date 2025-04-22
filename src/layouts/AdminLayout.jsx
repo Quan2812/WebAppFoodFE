@@ -91,9 +91,11 @@ const AdminLayout = () => {
   }, [history]);
   // Handle Logout AdminLayout
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("expiration");
-    localStorage.removeItem("user");
+    // Xóa dữ liệu khỏi localStorage và sessionStorage
+    localStorage.clear();
+    sessionStorage.clear();
+    // Tải lại trang mà không sử dụng cache
+    window.location.reload(true);  // Tải lại trang mà không dùng cache
     history.push("/");
   };
   const profile = (
@@ -319,7 +321,7 @@ const AdminLayout = () => {
           style={{
             textAlign: "center",
           }}>
-          Poly Food - &#169; FPT Polytechnic Hà Nội
+          Poly Food - &#169; VTC Academy
         </Footer>
       </Layout>
     </Layout>
