@@ -47,7 +47,8 @@ const TabProductCategory = ({
             {data &&
               data.map((item) => (
                 <Nav.Item key={item.key}>
-                  <Nav.Link eventKey={item.key}>
+                  <Nav.Link eventKey={item.key}
+                  style={{ paddingRight: 0, paddingLeft: 0 }}>
                     <h4>{item.nameProductType}</h4>
                   </Nav.Link>
                 </Nav.Item>

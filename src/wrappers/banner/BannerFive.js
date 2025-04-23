@@ -15,7 +15,8 @@ const BannerFive = () => {
   useEffect(() => {
     const getProducts = async () => {
       try {
-        let data = await StatisticsApi.GetTopSellingProducts({});
+        var response = await StatisticsApi.GetTopSellingProducts({});
+        var data = response.data;
         setProducts(data.slice(0, 4)); // Chỉ lấy tối đa 4 sản phẩm
         setLoading(false);
       } catch (error) {
